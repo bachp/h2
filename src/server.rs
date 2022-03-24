@@ -1466,13 +1466,8 @@ impl proto::Peer for Peer {
         // header
         if let Some(authority) = pseudo.authority {
             let maybe_authority = uri::Authority::from_maybe_shared(authority.clone().into_inner());
-            parts.authority = Some(maybe_authority.or_else(|why| {
-                malformed!(
-                    "malformed headers: malformed authority ({:?}): {}",
-                    authority,
-                    why,
-                )
-            })?);
+            // Ignore authority if it is invalid.
+            parts.authority = maybe_authority.ok();
         }
 
         // A :scheme is required, except CONNECT.
